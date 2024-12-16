@@ -35,7 +35,9 @@ STATICFILES_DIRS = [
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'shawurma-production.up.railway.app',
+]
 
 
 # Application definition
