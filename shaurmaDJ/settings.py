@@ -24,6 +24,8 @@ SECRET_KEY = 'django-insecure-96wzm$_j(e!ud9n_&4=)y0l_sfcn$b#)gtz+t%@jrif=fbt^cm
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
