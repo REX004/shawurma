@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шаурмичная - Оформление заказа</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <h1>Оформление заказа</h1>
+        <nav>
+            <a href="/">Главная</a>
+            <a href="/cart/">Корзина 🛒</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="checkout-container">
+        <section class="order-summary">
+            <h2>Ваш заказ</h2>
+            {% if cart_items %}
+                <div class="cart-items">
+                    {% for item in cart_items %}
+                        <div class="cart-item">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                                 class="cart-item-image">
+                            <div class="cart-item-info">
+                                <h3>{{ item.product.name }}</h3>
+                                <p>Количество: <strong>{{ item.quantity }}</strong></p>
+                                <p>Цена: <strong>{{ item.total_price }} ₽</strong></p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="order-total">
+                    <p><strong>Итого: {{ total_price }} ₽</strong></p>
+                </div>
+            {% else %}
+                <p>Ваша корзина пуста.</p>
+            {% endif %}
+        </section>
+
+        <section class="checkout-form-section">
+            <h2>Информация для доставки</h2>
+            <form method="post" class="checkout-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="name">Имя</label>
+                    <input type="text" id="name" name="name" required class="form-control"
+                           placeholder="Введите ваше имя">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Телефон</label>
+                    <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            required
+                            class="form-control"
+                            placeholder="+7 (___) ___-__-__"
+                    >
+                </div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const phoneInput = document.getElementById("phone");
+
+                        phoneInput.addEventListener("input", function (e) {
+                            let value = phoneInput.value.replace(/\D/g, ""); // Удаляем все нецифровые символы
+                            if (value.length > 11) {
+                                value = value.substring(0, 11); // Ограничиваем ввод 11 цифрами
+                            }
+
+                            // Форматируем значение в виде +7 (XXX) XXX-XX-XX
+                            let formattedValue = "+7";
+                            if (value.length > 1) {
+                                formattedValue += " (" + value.substring(1, 4);
+                            }
+                            if (value.length >= 5) {
+                                formattedValue += ") " + value.substring(4, 7);
+                            }
+                            if (value.length >= 8) {
+                                formattedValue += "-" + value.substring(7, 9);
+                            }
+                            if (value.length >= 10) {
+                                formattedValue += "-" + value.substring(9, 11);
+                            }
+
+                            phoneInput.value = formattedValue;
+                        });
+
+                        phoneInput.addEventListener("focus", function () {
+                            if (phoneInput.value === "") {
+                                phoneInput.value = "+7 "; // Автоподстановка +7 при фокусе, если поле пустое
+                            }
+                        });
+
+                        phoneInput.addEventListener("blur", function () {
+                            if (phoneInput.value === "+7 ") {
+                                phoneInput.value = ""; // Удаляем +7, если пользователь не ввел ничего
+                            }
+                        });
+                    });
+                </script>
+
+                <div class="form-group">
+                    <label for="address">Адрес доставки</label>
+                    <textarea id="address" name="address" required class="form-control" rows="3"
+                              placeholder="Введите адрес доставки"></textarea>
+                </div>
+
+                <button type="submit" class="checkout-submit-button">Оформить заказ</button>
+            </form>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Шаурмичная</p>
+</footer>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        background-color: #ffcc00;
+    }
+
+    nav a {
+        margin: 0 10px;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .checkout-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
+        justify-content: center;
+    }
+
+    .order-summary, .checkout-form-section {
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 600px;
+    }
+
+    h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .cart-items {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 15px;
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+
+    .cart-item-info h3 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .cart-item-info p {
+        margin: 5px 0;
+        color: #666;
+    }
+
+    .order-total {
+        font-size: 18px;
+        font-weight: bold;
+        text-align: right;
+        margin-top: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .checkout-submit-button {
+        background-color: #ffcc00;
+        border: none;
+        padding: 15px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 100%;
+    }
+
+    .checkout-submit-button:hover {
+        background-color: #e6b800;
+    }
+
+    footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #ffcc00;
+        margin-top: 20px;
+    }
+</style>
+</body>
+</html>

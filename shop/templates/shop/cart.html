@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шаурмичная - Корзина</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            margin-left: 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ffcc00;
+        }
+
+        .cart-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+
+        .cart-table thead {
+            background-color: #f8f9fa;
+        }
+
+        .cart-table th, .cart-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cart-item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cart-item-image {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .cart-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .checkout-button {
+            background-color: #ffcc00;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-button:hover {
+            background-color: #e6b800;
+            transform: translateY(-2px);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Ваша корзина</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/cart/">Корзина 🛒</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="notification" id="notification"></div>
+
+        <section class="cart-section">
+            {% if cart_items %}
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Количество</th>
+                            <th>Цена</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                            <tr data-product-id="{{ item.product.id }}">
+                                <td>
+                                    <div class="cart-item-info">
+                                        <img src="{{ item.product.image.url }}"
+                                             alt="{{ item.product.name }}"
+                                             class="cart-item-image">
+                                        <span>{{ item.product.name }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="quantity-control">
+                                        <input type="number"
+                                               class="quantity-input"
+                                               value="{{ item.quantity }}"
+                                               min="1"
+                                               data-product-id="{{ item.product.id }}">
+                                        <button class="update-quantity"
+                                                data-product-id="{{ item.product.id }}">
+                                            <i class="fas fa-sync"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>{{ item.total_price }} ₽</td>
+                                <td>
+                                    <button class="delete-item"
+                                            data-product-id="{{ item.product.id }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="cart-summary">
+                    <p>Итоговая стоимость: <strong id="cart-total">{{ cart_total }} ₽</strong></p>
+                    <button class="checkout-button" id="checkout-button">Оформить заказ</button>
+                </div>
+            {% else %}
+                <div class="empty-cart">
+                    <h2>Ваша корзина пуста</h2>
+                    <p>Добавьте товары, чтобы начать покупку</p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <footer class="container">
+        <p>&copy; 2024 Шаурмичная</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const updateButtons = document.querySelectorAll('.update-quantity');
+            const deleteButtons = document.querySelectorAll('.delete-item');
+            const checkoutButton = document.getElementById('checkout-button');
+            const notification = document.getElementById('notification');
+
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.style.display = 'block';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            }
+
+            updateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+
+                    fetch(`/update_cart/${productId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ quantity: quantityInput.value })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('cart-total').textContent = `${data.cart_total} ₽`;
+                            showNotification('Количество товара обновлено');
+                        }
+                    });
+                });
+            });
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+
+                    fetch(`/remove_from_cart/${productId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            row.remove();
+                            document.getElementById('cart-total').textContent = `${data.cart_total} ₽`;
+                            showNotification('Товар удален из корзины');
+
+                            // Check if cart is empty after deletion
+                            if (document.querySelector('.cart-table tbody').children.length === 0) {
+                                document.querySelector('.cart-summary').innerHTML = `
+                                    <div class="empty-cart">
+                                        <h2>Ваша корзина пуста</h2>
+                                        <p>Добавьте товары, чтобы начать покупку</p>
+                                    </div>
+                                `;
+                            }
+                        }
+                    });
+                });
+            });
+
+            if (checkoutButton) {
+                checkoutButton.addEventListener('click', function() {
+                    window.location.href = '/checkout/';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
