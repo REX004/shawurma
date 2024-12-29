@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оформление заказа</title>
+    <title>SHAWA - Оформление заказа</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <div class="header-container">
-            <h1>Оформление заказа</h1>
+            <h1>SHAWA</h1>
             <nav>
                 <a href="/">Главная</a>
                 <a href="/cart/">Корзина 🛒</a>
@@ -18,77 +19,44 @@
     </header>
 
     <main>
-        <section class="checkout-form">
-            <h2>Введите ваши данные</h2>
-            <form action="{% url 'submit_order' %}" method="post">
-                {% csrf_token %}
-                <label for="name">ФИО:</label>
-                <input type="text" id="name" name="name" required>
+        <div class="container">
+            <section class="checkout-form">
+                <h2>Оформление заказа</h2>
+                <form action="{% url 'submit_order' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">ФИО:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
 
-                <label for="address">Адрес:</label>
-                <input type="text" id="address" name="address" required>
+                    <div class="form-group">
+                        <label for="address">Адрес:</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
 
-                <label for="house">Дом:</label>
-                <input type="text" id="house" name="house" required>
+                    <div class="form-group">
+                        <label for="house">Дом:</label>
+                        <input type="text" id="house" name="house" required>
+                    </div>
 
-                <label for="phone">Телефон:</label>
-                <input type="tel" id="phone" name="phone" required>
+                    <div class="form-group">
+                        <label for="phone">Телефон:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
 
-                <label for="comments">Комментарии:</label>
-                <textarea id="comments" name="comments" rows="3"></textarea>
+                    <div class="form-group">
+                        <label for="comments">Комментарии к заказу:</label>
+                        <textarea id="comments" name="comments" rows="3"></textarea>
+                    </div>
 
-                <button type="submit" class="submit-order-button">Подтвердить заказ</button>
-            </form>
-        </section>
+                    <button type="submit" class="checkout-button">Подтвердить заказ</button>
+                </form>
+            </section>
+        </div>
     </main>
 
     <footer>
-        <p>&copy; 2024 Шаурмичная</p>
+        <p>&copy; 2024 SHAWA</p>
     </footer>
-
-    <style>
-        .checkout-form {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .checkout-form h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .checkout-form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .checkout-form input, .checkout-form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .submit-order-button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-        }
-
-        .submit-order-button:hover {
-            background-color: #218838;
-        }
-    </style>
 </body>
 </html>

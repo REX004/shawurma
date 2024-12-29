@@ -1,192 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шаурмичная - Товары</title>
+    <title>Шаурмичная - Вкуснейшие шаурмы!</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400&display=swap"
+          rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <h1>Добро пожаловать в Шаурмичную</h1>
-            <nav>
-                <a href="/">Главная</a>
-                <a href="/cart/">Корзина 🛒</a>
-            </nav>
+
+<header>
+    <div class="header-container">
+        <h1>SHAWA</h1>
+        <nav>
+            <a href="/">Главная</a>
+            <a href="/cart/">Корзина 🛒</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Секция со слайдером изображений -->
+<section class="hero-slider">
+    <div class="slide active" style="background-image: url('https://via.placeholder.com/1200x400');">
+        <div class="hero-content">
+            <h2>Лучшие шаурмы в городе!</h2>
+            <p>Попробуйте наши сочные и вкусные шаурмы с доставкой на дом.</p>
         </div>
-    </header>
+    </div>
+    <div class="slide" style="background-image: url('https://via.placeholder.com/1200x400/000000/FFFFFF');">
+        <div class="hero-content">
+            <h2>Натуральные ингредиенты</h2>
+            <p>Мы используем только самые свежие продукты для приготовления.</p>
+        </div>
+    </div>
+    <div class="slide" style="background-image: url('https://via.placeholder.com/1200x400/FF5722/FFFFFF');">
+        <div class="hero-content">
+            <h2>Бесплатная доставка!</h2>
+            <p>Закажите прямо сейчас и получите бесплатную доставку по городу.</p>
+        </div>
+    </div>
+    <div class="slider-controls">
+        <span class="prev">&#10094;</span>
+        <span class="next">&#10095;</span>
+    </div>
+</section>
 
-    <main>
-        <section class="product-list">
-            {% for product in products %}
-                <div class="product-card">
-                    <a href="{% url 'product_detail' product.id %}">
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                    </a>
-                    <div class="product-info">
-                        <h2 class="product-title">{{ product.name }}</h2>
-                        <p class="product-description">{{ product.description|truncatechars:50 }}</p>
-                        <p class="product-price">{{ product.price }} ₽</p>
-                        <form action="{% url 'add_to_cart' product.id %}" method="post" class="add-to-cart-form">
-                            {% csrf_token %}
-                            <button type="submit" class="add-to-cart-button">Добавить в корзину</button>
-                        </form>
-                    </div>
+<main>
+    <section class="product-list">
+        {% for product in products %}
+            <div class="product-card">
+                <a href="{% url 'product_detail' product.id %}">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" loading="lazy">
+                </a>
+                <div class="product-info">
+                    <h2 class="product-title">{{ product.name }}</h2>
+                    <p class="product-description">{{ product.description|truncatechars:50 }}</p>
+                    <p class="product-price">{{ product.price }} ₽</p>
+                    <form action="{% url 'add_to_cart' product.id %}" method="post" class="add-to-cart-form">
+                        {% csrf_token %}
+                        <button type="submit" class="add-to-cart-button">Добавить в корзину</button>
+                    </form>
                 </div>
-            {% empty %}
-                <p>Товары пока не добавлены.</p>
-            {% endfor %}
-        </section>
-    </main>
+            </div>
+        {% empty %}
+            <p>Товары пока не добавлены.</p>
+        {% endfor %}
+    </section>
+</main>
 
-    <footer>
-        <p>&copy; 2024 Шаурмичная</p>
-    </footer>
+<footer>
+    <p>&copy; 2024 SHAWA</p>
+</footer>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const forms = document.querySelectorAll(".add-to-cart-form");
+<!-- Скрипты для слайдера -->
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const nextButton = document.querySelector('.next');
+    const prevButton = document.querySelector('.prev');
 
-            forms.forEach(form => {
-                form.addEventListener("submit", async (event) => {
-                    event.preventDefault();
-                    const url = form.action;
-                    const csrfToken = form.querySelector("input[name='csrfmiddlewaretoken']").value;
-
-                    try {
-                        const response = await fetch(url, {
-                            method: "POST",
-                            headers: {
-                                "X-CSRFToken": csrfToken,
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({})
-                        });
-
-                        const data = await response.json();
-                        if (data.message) {
-                            showNotification(data.message);
-                        }
-                    } catch (error) {
-                        console.error("Ошибка при добавлении в корзину:", error);
-                    }
-                });
-            });
-
-            function showNotification(message) {
-                const notification = document.createElement("div");
-                notification.className = "notification";
-                notification.textContent = message;
-
-                document.body.appendChild(notification);
-                setTimeout(() => {
-                    notification.remove();
-                }, 2000);
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            if (i === index) {
+                slide.classList.add('active');
             }
         });
-    </script>
+    }
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-        }
+    nextButton.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        showSlide(currentSlide);
+    });
 
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: #ffcc00;
-        }
+    prevButton.addEventListener('click', () => {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        showSlide(currentSlide);
+    });
 
-        nav a {
-            margin: 0 10px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .product-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 20px;
-            justify-content: center;
-        }
-
-        .product-card {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-
-        .product-card:hover {
-            transform: scale(1.05);
-        }
-
-        .product-image {
-            width: 100%;
-            height: auto;
-            max-height: 200px;
-            object-fit: cover;
-        }
-
-        .product-info {
-            padding: 15px;
-        }
-
-        .product-title {
-            font-size: 20px;
-            margin: 0;
-            margin-bottom: 10px;
-        }
-
-        .product-description {
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .product-price {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .add-to-cart-button {
-            background-color: #ffcc00;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .add-to-cart-button:hover {
-            background-color: #e6b800;
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #ffcc00;
-            color: #333;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            font-weight: bold;
-        }
-    </style>
+    // Автоматическая смена слайдов каждые 5 секунд
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        showSlide(currentSlide);
+    }, 5000);
+</script>
 </body>
 </html>

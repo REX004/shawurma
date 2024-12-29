@@ -19,19 +19,13 @@ def checkout_view(request):
 
 def create_order(request):
     if request.method == 'POST':
-        # Получаем данные из формы
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         address = request.POST.get('address')
 
-        # Получаем корзину
         cart = get_cart(request)
         products = Product.objects.filter(id__in=cart.keys())
 
-        # Здесь должна быть логика создания заказа
-        # Например, создание модели Order
-
-        # Очистка корзины после оформления заказа
         request.session['cart'] = {}
 
         return JsonResponse({
