@@ -496,6 +496,7 @@ footer {
         padding: 10px;
     }
 }
+
 /* Стили для формы оформления заказа */
 .checkout-form {
     max-width: 600px;
@@ -567,7 +568,6 @@ footer {
     transform: scale(1.02);
 }
 
-/* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
     .checkout-form {
         margin: 20px;
@@ -582,7 +582,7 @@ footer {
 @media (max-width: 480px) {
     .checkout-form input,
     .checkout-form textarea {
-        font-size: 16px; /* Предотвращает масштабирование на iOS */
+        font-size: 16px;
     }
 
     .checkout-form .checkout-button {
